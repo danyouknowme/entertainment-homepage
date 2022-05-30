@@ -11,7 +11,18 @@
 		<div
 			class="absolute top-2 right-3 w-6 h-6 bg-lightblack rounded-full flex items-center justify-center cursor-pointer"
 		>
-			<b-icon icon="bookmark" class="text-xs text-white"></b-icon>
+			<b-icon
+				v-if="checkBookmark(movie.id)"
+				icon="bookmark-fill"
+				class="text-xs text-white"
+				@click="removeBookmarkMovie(movie)"
+			></b-icon>
+			<b-icon
+				v-else
+				icon="bookmark"
+				class="text-xs text-white"
+				@click="addBookmarkMovie(movie)"
+			></b-icon>
 		</div>
 		<div
 			class="text-white"
@@ -42,6 +53,38 @@ import { Movie } from "../types/movie";
 export default class Card extends Vue {
 	@Prop({ default: "sm" }) readonly size!: string;
 	@Prop() readonly movie!: Movie;
+
+	bookmarkMovies: Movie[] = [];
+
+	private checkBookmark(id: number) {
+		return this.bookmarkMovies.some((movie) => movie.id === id);
+	}
+
+	private addBookmarkMovie(movie: Movie) {
+		this.getStorageMovies();
+		this.bookmarkMovies.push(movie);
+		this.setStorageMovies();
+	}
+
+	private removeBookmarkMovie(movie: Movie) {
+		this.getStorageMovies();
+		this.bookmarkMovies = this.bookmarkMovies.filter((m) => m.id !== movie.id);
+		this.setStorageMovies();
+	}
+
+	private getStorageMovies() {
+		const storageMovies = localStorage.getItem("bookmarkMovies");
+		this.bookmarkMovies =
+			storageMovies !== null ? JSON.parse(storageMovies) : [];
+	}
+
+	private setStorageMovies() {
+		localStorage.setItem("bookmarkMovies", JSON.stringify(this.bookmarkMovies));
+	}
+
+	created() {
+		this.getStorageMovies();
+	}
 }
 </script>
 
