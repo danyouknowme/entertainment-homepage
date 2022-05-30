@@ -7,8 +7,9 @@
 			<div class="w-full mt-4">
 				<p class="text-2xl text-white">Trending</p>
 				<div
-					class="w-full overflow-x-auto gap-6 flex mt-4"
-					id="horizontal-scroll"
+					class="w-full overflow-x-auto gap-6 flex mt-4 horizontal-scroll"
+					ref="horizontal-scroll"
+					@mousewheel="scrollX"
 				>
 					<Card />
 					<Card />
@@ -37,16 +38,15 @@ import Card from "@/components/Card.vue";
 	},
 })
 export default class HomeView extends Vue {
-	private horizontalScroll() {
-		document.addEventListener("wheel", (e) => {
-			const scrollContainer = document.getElementById("horizontal-scroll");
-			if (!scrollContainer) return;
-			scrollContainer.scrollLeft += e.deltaY;
-		});
-	}
-
-	created() {
-		this.horizontalScroll();
+	private scrollX(event: WheelEvent) {
+		const scrollContainer = this.$refs[
+			"horizontal-scroll"
+		] as HTMLElement | null;
+		if (!scrollContainer) return;
+		scrollContainer.scrollLeft += event.deltaY;
+		// const scrollContainer = document.getElementById("horizontal-scroll");
+		// if (!scrollContainer) return;
+		// scrollContainer.scrollLeft += e.deltaY;
 	}
 }
 </script>
