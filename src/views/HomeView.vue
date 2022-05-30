@@ -1,10 +1,10 @@
 <template>
 	<div class="home p-6 min-h-screen flex">
 		<Navbar :page="'home'" />
-		<div class="w-full flex flex-col flex-1 ml-8 overflow-x-hidden">
-			<Search />
+		<div class="w-full flex flex-col flex-1 ml-8 overflow-hidden">
+			<Search @value-change="onChangeSearchValue" />
 			<!-- Trending -->
-			<div class="w-full mt-4">
+			<div v-if="!searchValue" class="w-full mt-4">
 				<div class="flex items-center justify-between">
 					<span class="text-2xl text-white">Trending</span>
 					<div
@@ -22,6 +22,30 @@
 				>
 					<Card
 						v-for="(movie, index) in trendingMovies"
+						:key="index"
+						:movie="movie"
+						:size="'lg'"
+					/>
+				</div>
+			</div>
+			<!-- Recommended -->
+			<div v-if="!searchValue" class="w-full mt-10 pb-10">
+				<p class="text-2xl text-white">Recommended for you</p>
+				<div class="w-full grid gap-y-20 gap-x-4 mt-4">
+					<Card
+						v-for="(movie, index) in recommendedMovies"
+						:key="index"
+						:movie="movie"
+					/>
+				</div>
+			</div>
+			<div v-else class="w-full mt-10 pb-10">
+				<p class="text-2xl text-white">
+					Found {{ filteredMovies.length }} results for '{{ searchValue }}'
+				</p>
+				<div class="w-full grid gap-y-20 gap-x-4 mt-4">
+					<Card
+						v-for="(movie, index) in filteredMovies"
 						:key="index"
 						:movie="movie"
 					/>
@@ -48,7 +72,10 @@ import { ROOT_API, TMDB_API_KEY } from "../config/config";
 })
 export default class HomeView extends Vue {
 	trendingMovies: Movie[] | undefined = [];
+	recommendedMovies: Movie[] | undefined = [];
+	filteredMovies: Movie[] | undefined = [];
 	isScrolling = false;
+	searchValue = "";
 
 	private scrollX(event: WheelEvent) {
 		const scrollContainer = this.$refs[
@@ -70,8 +97,37 @@ export default class HomeView extends Vue {
 		return data.results;
 	}
 
+	private onChangeSearchValue(value: string) {
+		this.searchValue = value;
+		console.log(this.searchValue);
+		this.filteredMovies = this.filteredMovies?.filter((movie) =>
+			movie.title.toLowerCase().includes(this.searchValue.toLowerCase())
+		);
+		console.log(this.filteredMovies);
+	}
+
+	private async getRecommendedMovies() {
+		const response = await fetch(
+			`${ROOT_API}/movie/popular?api_key=${TMDB_API_KEY}`,
+			{
+				method: "GET",
+			}
+		);
+		const data = await response.json();
+		return data.results;
+	}
+
 	async created() {
-		this.trendingMovies = await this.getTrendingMovies();
+		const trendingMovies = await this.getTrendingMovies();
+		const recommendedMovies = await this.getRecommendedMovies();
+		this.trendingMovies = trendingMovies;
+		this.recommendedMovies = recommendedMovies;
+		this.filteredMovies = [...trendingMovies, ...recommendedMovies];
 	}
 }
 </script>
+<style lang="scss" scoped>
+.grid {
+	grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+</style>
