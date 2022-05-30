@@ -11,7 +11,7 @@
 				icon="grid-fill"
 				class="text-lightbluefont my-3 cursor-pointer"
 				:class="page === 'home' ? 'active' : ''"
-				@click="redirectTo('home')"
+				@click="redirectTo('')"
 			></b-icon>
 			<b-icon
 				icon="film"
