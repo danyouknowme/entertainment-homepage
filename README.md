@@ -1,4 +1,4 @@
-# ent-web-app
+# Entertainment Homepage
 
 ## Project setup
 ```
