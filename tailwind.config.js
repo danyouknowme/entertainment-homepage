@@ -9,6 +9,11 @@ module.exports = {
       red: "#FF4543",
       transparent: "transparent",
     },
+    extend: {
+      flex: {
+        0: "0 0 auto",
+      },
+    },
   },
   plugins: [],
 };
