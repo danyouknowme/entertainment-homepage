@@ -8,6 +8,7 @@ module.exports = {
       lightbluefont: "#5A6991",
       lightgrey: "rgb(209 213 219)",
       red: "#FF4543",
+      lightblack: "rgba(0, 0, 0, 0.4)",
       transparent: "transparent",
     },
     extend: {
